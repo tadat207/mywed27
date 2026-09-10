@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạ Thành Đạt — UTE-UD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0F1C;
+    --panel: #111A2E;
+    --panel-alt: #0E1526;
+    --line: #26324E;
+    --line-soft: #1B2439;
+    --blue: #3AA0FF;
+    --blue-deep: #0C63D9;
+    --gold: #E3A94B;
+    --text: #EAF0FB;
+    --text-dim: #93A0BF;
+    --text-mute: #5C6888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: 
+      linear-gradient(var(--line-soft) 1px, transparent 1px) 0 0/100% 72px,
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px) 0 0/72px 100%,
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  ::selection { background: var(--blue-deep); color: #fff; }
+  a { color: inherit; text-decoration: none; }
+  
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 28px; }
+
+  /* GÓC VIỀN DECOR (PLATE) */
+  .plate { position: relative; border: 1px solid var(--line); }
+  .plate::before, .plate::after, .plate .c-br, .plate .c-bl {
+    content: "";
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 1px solid var(--blue);
+    opacity: .8;
+  }
+  .plate::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .plate::after { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+  .plate .c-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+  .plate .c-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 28px; max-width: 920px; margin: 0 auto;
+    font-family: 'IBM Plex Mono', monospace; font-size: .78rem; color: var(--text-mute);
+  }
+  .topbar .mark { color: var(--blue); }
+
+  /* HERO SECTION (PHẦN GIỚI THIỆU ĐẦU TRANG) */
+  .hero {
+    padding: 56px 44px 44px;
+    margin: 8px 0 64px;
+    animation: revealHero 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  @keyframes revealHero {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4.1rem); line-height: 1.05; color: var(--text); }
+  .hero .role { margin-top: 14px; font-size: 1.05rem; color: var(--text-dim); max-width: 34ch; }
+  .hero .loc {
+    font-family: 'IBM Plex Mono', monospace; font-size: .78rem; color: var(--blue);
+    border: 1px solid var(--line); padding: 6px 12px; white-space: nowrap;
+  }
+
+  /* TERMINAL WINDOW */
+  .term {
+    margin-top: 36px; background: var(--panel-alt); border: 1px solid var(--line);
+    font-family: 'IBM Plex Mono', monospace; font-size: .86rem; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Đổ bóng cho ngầu */
+  }
+  .term-head {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); color: var(--text-mute);
+  }
+  .term-head span { width: 8px; height: 8px; border-radius: 50%; background: var(--line); display: inline-block; }
+  .term-head span:nth-child(1) { background: #FF5F56; } /* Màu nút MacOS */
+  .term-head span:nth-child(2) { background: #FFBD2E; }
+  .term-head span:nth-child(3) { background: #27C93F; }
+  
+  .term-body { padding: 18px 20px 22px; color: var(--text-dim); }
+  .term-body .p { color: var(--gold); }
+  .term-body .out { color: var(--text); }
+  .term-body div { margin-bottom: 8px; }
+  
+  /* HIỆU ỨNG DẤU NHÁY (BLINKING CURSOR) */
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background-color: var(--blue);
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* BỐ CỤC CÁC SECTION */
+  section { padding: 52px 0; border-top: 1px solid var(--line-soft); }
+  section .head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 30px; }
+  section .head .idx { font-family: 'IBM Plex Mono', monospace; font-size: .78rem; color: var(--text-mute); }
+  section .head h2 { font-size: 1.7rem; }
+
+  /* HIỆU ỨNG KHI CUỘN TRANG (SCROLL REVEAL) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .about p { max-width: 62ch; color: var(--text-dim); font-size: 1.02rem; }
+  .about p + p { margin-top: 16px; }
+  .about strong { color: var(--text); font-weight: 500; }
+
+  /* THẺ HỌC VẤN (EDU) */
+  .edu {
+    display: flex; gap: 26px; align-items: center; background: var(--panel);
+    border: 1px solid var(--line); padding: 26px; transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .edu:hover { transform: translateX(10px); border-color: var(--blue); } /* Hover trượt sang phải */
+  .edu img { width: 84px; height: 84px; flex-shrink: 0; object-fit: contain; }
+  .edu-text .school-vi { font-family: 'Space Grotesk', sans-serif; font-size: 1.18rem; font-weight: 600; color: var(--text); }
+  .edu-text .school-en { font-family: 'IBM Plex Mono', monospace; font-size: .76rem; color: var(--blue); margin-top: 4px; letter-spacing: .02em; }
+  .edu-text .school-sub { margin-top: 8px; color: var(--text-dim); font-size: .94rem; }
+
+  /* THẺ KỸ NĂNG (STACK-NODE) */
+  .stack { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+  .stack-node {
+    flex: 1 1 220px; border: 1px solid var(--line); background: var(--panel); padding: 22px 20px; 
+    position: relative; transition: all 0.3s ease; cursor: pointer; z-index: 1;
+  }
+  .stack-node + .stack-node { border-left: none; }
+  
+  /* HIỆU ỨNG HOVER CHO THẺ KỸ NĂNG */
+  .stack-node:hover {
+    transform: translateY(-8px); /* Nổi lên */
+    border: 1px solid var(--blue);
+    box-shadow: 0 10px 20px rgba(58, 160, 255, 0.15); /* Phát sáng mờ */
+    z-index: 2; /* Trồi lên trên các thẻ khác */
+  }
+  .stack-node .lang { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--blue); }
+  .stack-node .role { margin-top: 8px; font-size: .88rem; color: var(--text-dim); }
+  .stack-node .tag { margin-top: 14px; font-family: 'IBM Plex Mono', monospace; font-size: .7rem; color: var(--text-mute); }
+
+  /* SỞ THÍCH */
+  .interest-row {
+    display: grid; grid-template-columns: 180px 1fr; gap: 20px; padding: 20px 0; 
+    border-top: 1px solid var(--line-soft); transition: padding-left 0.3s ease;
+  }
+  .interest-row:hover { padding-left: 15px; } /* Thụt vào nhẹ khi hover */
+  .interest-row:first-child { border-top: none; }
+  .interest-row .label { font-family: 'IBM Plex Mono', monospace; font-size: .8rem; color: var(--gold); padding-top: 2px; }
+  .interest-row p { color: var(--text-dim); max-width: 56ch; }
+
+  /* KẾT NỐI */
+  .connect {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+    background: var(--panel); border: 1px solid var(--line); padding: 26px 28px;
+  }
+  .btn-fb {
+    display: inline-flex; align-items: center; gap: 10px; background: var(--blue-deep); color: #fff;
+    padding: 13px 22px; font-family: 'IBM Plex Mono', monospace; font-size: .85rem;
+    border: 1px solid var(--blue); transition: all 0.3s ease; flex-shrink: 0;
+  }
+  .btn-fb:hover { background: var(--blue); transform: scale(1.05); box-shadow: 0 5px 15px rgba(58, 160, 255, 0.4); }
+  .btn-fb svg { width: 16px; height: 16px; }
+
+  /* DONATE */
+  .donate { padding: 36px; background: var(--panel-alt); display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+  .donate img { width: 168px; height: auto; background: #fff; padding: 10px; transition: transform 0.3s ease; }
+  .donate img:hover { transform: scale(1.1) rotate(2deg); } /* Zoom nhẹ mã QR */
+  .donate-text .stamp { font-family: 'IBM Plex Mono', monospace; font-size: .74rem; color: var(--gold); letter-spacing: .04em; }
+  .donate-text h3 { margin-top: 8px; font-size: 1.3rem; color: var(--text); }
+  .donate-text p { margin-top: 10px; color: var(--text-dim); font-size: .94rem; }
+
+  footer {
+    padding: 36px 0 48px; border-top: 1px solid var(--line-soft); display: flex; justify-content: space-between;
+    flex-wrap: wrap; font-family: 'IBM Plex Mono', monospace; font-size: .74rem; color: var(--text-mute);
+  }
+
+  @media (max-width: 640px) {
+    .stack-node + .stack-node { border-left: 1px solid var(--line); border-top: none; margin-top: -1px; }
+    .hero { padding: 40px 24px 32px; }
+    .edu { flex-direction: column; align-items: flex-start; }
+    .donate { flex-direction: column; text-align: center; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span><span class="mark">//</span> ute-ud · da nang, vn</span>
+    <span>rev. 2026</span>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Hero Section -->
+    <header class="hero plate">
+      <span class="c-bl"></span><span class="c-br"></span>
+      <div class="hero-top">
+        <div>
+          <h1>Tạ Thành Đạt</h1>
+          <p class="role">Sinh viên ngành Công nghệ thông tin, tìm hiểu sâu về lập trình hệ thống, cấu trúc dữ liệu và các nền tảng pháp luật, lịch sử chính trị.</p>
+        </div>
+        <span class="loc">ĐÀ NẴNG, VIỆT NAM</span>
+      </div>
+
+      <div class="term">
+        <div class="term-head"><span></span><span></span><span></span> whoami.sh</div>
+        <div class="term-body">
+          <div><span class="p">$</span> whoami</div>
+          <div class="out">ta_dat — sinh viên Trường ĐH Sư phạm Kỹ thuật, ĐH Đà Nẵng</div>
+          <div><span class="p">$</span> stack --list</div>
+          <div class="out">C · C++ · Java</div>
+          <div><span class="p">$</span> status <span class="cursor"></span></div>
+          <div class="out" style="color: var(--text-mute);">// đang học, đang code, thỉnh thoảng cầm cơ ra bàn billiards</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Các section có gắn class "reveal" để cuộn tới đâu hiện tới đó -->
+    <section class="about reveal" id="about">
+      <div class="head"><span class="idx">01</span><h2>Về tôi</h2></div>
+      <p>Tôi là <strong>Tạ Đạt</strong>, hiện đang là sinh viên tại <strong>Trường Đại học Sư phạm Kỹ thuật – Đại học Đà Nẵng (UTE-UD)</strong>, sống và học tập tại Đà Nẵng.</p>
+      <p>Song song với việc học kỹ thuật, tôi dành thời gian tìm hiểu về luật học, lịch sử chính trị và các hệ thống pháp luật nền tảng — một mối quan tâm chạy song song với việc lập trình, không thay thế nó.</p>
+    </section>
+
+    <section id="edu" class="reveal">
+      <div class="head"><span class="idx">02</span><h2>Học vấn</h2></div>
+      <div class="edu">
+        <img src="https://upload.wikimedia.org/wikipedia/vi/5/5b/Logo_Tr%C6%B0%E1%BB%9Dng_%C4%90%E1%BA%A1i_h%E1%BB%8Dc_S%C6%B0_ph%E1%BA%A1m_K%E1%BB%B9_thu%E1%BA%ADt%2C_%C4%90%E1%BA%A1i_h%E1%BB%8Dc_%C4%90%C3%A0_N%E1%BA%B5ng.svg" alt="Logo UTE-UD">
+        <div class="edu-text">
+          <div class="school-vi">Trường Đại học Sư phạm Kỹ thuật – Đại học Đà Nẵng</div>
+          <div class="school-en">UNIVERSITY OF TECHNOLOGY AND EDUCATION — UD</div>
+          <div class="school-sub">Sinh viên · Đà Nẵng, Việt Nam</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="reveal">
+      <div class="head"><span class="idx">03</span><h2>Kỹ năng lập trình</h2></div>
+      <div class="stack">
+        <div class="stack-node">
+          <div class="lang">C</div>
+          <p class="role">Nền tảng thuật toán, cấu trúc dữ liệu và làm việc gần với bộ nhớ.</p>
+          <div class="tag">core / algorithms</div>
+        </div>
+        <div class="stack-node">
+          <div class="lang">C++</div>
+          <p class="role">Lập trình hướng đối tượng, tối ưu hiệu năng cho các bài toán lớn hơn.</p>
+          <div class="tag">oop / performance</div>
+        </div>
+        <div class="stack-node">
+          <div class="lang">Java</div>
+          <p class="role">Xây dựng ứng dụng có cấu trúc, hướng đối tượng ở quy mô lớn hơn.</p>
+          <div class="tag">applications</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="interests" class="reveal">
+      <div class="head"><span class="idx">04</span><h2>Mối quan tâm khác</h2></div>
+      <div class="interests">
+        <div class="interest-row">
+          <div class="label">luật & lịch sử</div>
+          <p>Quan tâm đến luật học, lịch sử chính trị và cách các hệ thống pháp luật nền tảng được xây dựng — một góc nhìn bổ trợ cho tư duy hệ thống trong lập trình.</p>
+        </div>
+        <div class="interest-row">
+          <div class="label">billiards</div>
+          <p>Chơi billiards như một cách rèn tâm lý và tư duy chiến thuật — tính toán đường bi cũng cần logic không khác gì debug một đoạn code.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="connect" class="reveal">
+      <div class="head"><span class="idx">05</span><h2>Kết nối</h2></div>
+      <div class="connect">
+        <p>Theo dõi hoặc nhắn tin cho tôi qua Facebook.</p>
+        <a class="btn-fb" href="https://www.facebook.com/oggygaming207/" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.91h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+          facebook.com/oggygaming207
+        </a>
+      </div>
+    </section>
+
+    <section id="donate" class="reveal">
+      <div class="head"><span class="idx">06</span><h2>Ủng hộ</h2></div>
+      <div class="donate plate">
+        <span class="c-bl"></span><span class="c-br"></span>
+        <img src="data:image/png;base64,PASTE_QR_BASE64_HERE" alt="Mã QR">
+        <div class="donate-text">
+          <div class="stamp">QR — DONATE</div>
+          <h3>Một ly cà phê cũng là động lực</h3>
+          <p>Nếu trang này hoặc những gì tôi làm giúp ích được cho bạn, quét mã QR để gửi ủng hộ.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Tạ Thành Đạt</span>
+      <span>thiết kế tại Đà Nẵng</span>
+    </footer>
+
+  </div>
+
+  <!-- JAVASCRIPT: Điều khiển hiệu ứng cuộn trang (Scroll Reveal) -->
+  <script>
+    // Khai báo một IntersectionObserver: Bộ theo dõi xem phần tử có nằm trong màn hình không
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        // Nếu phần tử xuất hiện trong vùng nhìn thấy của màn hình
+        if (entry.isIntersecting) {
+          // Thêm class 'active' để kích hoạt CSS animation (hiện lên)
+          entry.target.classList.add('active');
+        }
+      });
+    }, {
+      threshold: 0.15 // Kích hoạt khi cuộn thấy 15% diện tích của section
+    });
+
+    // Lấy tất cả các thẻ có class 'reveal' và gắn bộ theo dõi vào chúng
+    const revealElements = document.querySelectorAll('.reveal');
+    revealElements.forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
